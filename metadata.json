@@ -1,0 +1,6 @@
+{
+  "name": "Glera Bridge",
+  "description": "Mobile-first trading control platform for monitoring and remotely managing MetaTrader 5 Expert Advisors.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
