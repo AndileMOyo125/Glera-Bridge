@@ -251,6 +251,10 @@ function extractApiKey(req: express.Request): string {
 
 function authenticateDashboardKey(req: express.Request, res: express.Response, next: express.NextFunction) {
   const apiKey = extractApiKey(req);
+  if (SINGLE_USER) {
+    (req as any).client = clients[0];
+    return next();
+  }
   if (!apiKey) {
     return res.status(401).json({ error: 'Unauthorized: Missing dashboard API key header (x-api-key)' });
   }
@@ -264,6 +268,12 @@ function authenticateDashboardKey(req: express.Request, res: express.Response, n
 
 function authenticateEaConnection(req: express.Request, res: express.Response, next: express.NextFunction) {
   const apiKey = extractApiKey(req);
+  if (SINGLE_USER) {
+    const conn = connections[0];
+    (req as any).connection = conn;
+    (req as any).client = clients.find(c => c.id === conn.client_id) || { id: conn.client_id, client_name: 'Workspace' };
+    return next();
+  }
   if (!apiKey) {
     return res.status(401).json({ error: 'Unauthorized: Missing EA connection key header (x-api-key)' });
   }
@@ -293,6 +303,16 @@ async function startServer() {
   // 1. Workspace Registration
   app.post('/api/register', (req, res) => {
     const { clientName } = req.body || {};
+    if (SINGLE_USER) {
+      const primaryClient = clients[0];
+      const primaryConn = connections[0];
+      return res.status(200).json({
+        success: true,
+        message: 'Single-user mode active. Returning existing workspace.',
+        client: { id: primaryClient.id, clientName: primaryClient.client_name, apiKey: primaryClient.api_key },
+        connection: { id: primaryConn.id, name: primaryConn.connection_name, apiKey: primaryConn.connection_key },
+      });
+    }
     if (!clientName || typeof clientName !== 'string' || clientName.trim().length === 0 || clientName.trim().length > 50) {
       return res.status(400).json({ error: 'Validation Error: clientName must be a non-empty string between 1 and 50 characters.' });
     }
@@ -367,29 +387,45 @@ async function startServer() {
 
     let account = accounts.find(a => a.account_id === strAccountId);
     if (account && account.client_id !== client.id) {
-      return res.status(403).json({ error: 'Forbidden: Account belongs to another workspace.' });
+      // Reassign account to the single workspace in single-user mode, or to current client
+      if (SINGLE_USER) {
+        account.client_id = client.id;
+      } else {
+        return res.status(403).json({ error: 'Forbidden: Account belongs to another workspace.' });
+      }
     }
     if (account && account.connection_id && account.connection_id !== conn.id) {
-      return res.status(403).json({ error: 'Forbidden: This MT5 account is already bound to another EA connection.' });
+      if (SINGLE_USER) {
+        account.connection_id = conn.id;
+      } else {
+        return res.status(403).json({ error: 'Forbidden: This MT5 account is already bound to another EA connection.' });
+      }
     }
 
     const otherBound = accounts.find(a => a.connection_id === conn.id && a.account_id !== strAccountId);
     if (otherBound) {
-      return res.status(409).json({ error: 'This EA connection is already bound to another MT5 account. Create a separate connection for each MT5/EA installation.' });
+      if (SINGLE_USER) {
+        // unbind the other account from this connection to allow single-user reuse
+        otherBound.connection_id = null;
+      } else {
+        return res.status(409).json({ error: 'This EA connection is already bound to another MT5 account. Create a separate connection for each MT5/EA installation.' });
+      }
     }
 
     // Check if this connection has a restricted EA License
     const matchingLicense = licenses.find(l => l.connection_key === conn.connection_key);
     if (matchingLicense) {
-      if (matchingLicense.status === 'SUSPENDED') {
-        return res.status(403).json({ error: 'Forbidden: EA License has been suspended by the developer. Contact developer on WhatsApp for reactivation.' });
-      }
-      if (matchingLicense.expires_at && new Date(matchingLicense.expires_at).getTime() < now) {
-        matchingLicense.status = 'EXPIRED';
-        return res.status(403).json({ error: 'Forbidden: EA License has expired. Please renew with the developer on WhatsApp.' });
-      }
-      if (matchingLicense.mt5_account && matchingLicense.mt5_account !== 'Any' && matchingLicense.mt5_account !== strAccountId) {
-        return res.status(403).json({ error: `Forbidden: EA License is locked to MT5 Account #${matchingLicense.mt5_account}. Terminal is #${strAccountId}.` });
+      if (!SINGLE_USER) {
+        if (matchingLicense.status === 'SUSPENDED') {
+          return res.status(403).json({ error: 'Forbidden: EA License has been suspended by the developer. Contact developer on WhatsApp for reactivation.' });
+        }
+        if (matchingLicense.expires_at && new Date(matchingLicense.expires_at).getTime() < now) {
+          matchingLicense.status = 'EXPIRED';
+          return res.status(403).json({ error: 'Forbidden: EA License has expired. Please renew with the developer on WhatsApp.' });
+        }
+        if (matchingLicense.mt5_account && matchingLicense.mt5_account !== 'Any' && matchingLicense.mt5_account !== strAccountId) {
+          return res.status(403).json({ error: `Forbidden: EA License is locked to MT5 Account #${matchingLicense.mt5_account}. Terminal is #${strAccountId}.` });
+        }
       }
       matchingLicense.last_used_at = new Date(now).toISOString();
     }
@@ -806,6 +842,7 @@ async function startServer() {
   const ADMIN_MASTER_PIN = '2026'; // Default Developer Master PIN
 
   app.post('/api/admin/verify-pin', (req, res) => {
+    if (SINGLE_USER) return res.status(404).json({ error: 'Admin disabled in single-user mode.' });
     const { pin } = req.body || {};
     if (String(pin).trim() === ADMIN_MASTER_PIN) {
       return res.json({ success: true, token: 'dev_admin_session_token_' + Date.now() });
@@ -815,6 +852,7 @@ async function startServer() {
 
   // 15. Admin - List All Issued EA Licenses
   app.get('/api/admin/licenses', (req, res) => {
+    if (SINGLE_USER) return res.status(404).json({ error: 'Admin disabled in single-user mode.' });
     const formatted = licenses.map(l => ({
       id: l.id,
       clientName: l.client_name,
@@ -833,6 +871,7 @@ async function startServer() {
 
   // 16. Admin - Issue New EA License (and automatic connection)
   app.post('/api/admin/licenses', (req, res) => {
+    if (SINGLE_USER) return res.status(404).json({ error: 'Admin disabled in single-user mode.' });
     const { clientName, phoneNumber = '', mt5Account = 'Any', plan = 'MONTHLY', notes = '', customExpiresDays = 30 } = req.body || {};
 
     if (!clientName || typeof clientName !== 'string' || !clientName.trim()) {
@@ -908,6 +947,7 @@ async function startServer() {
 
   // 17. Admin - Update License (Suspend, Activate, Extend, Edit)
   app.patch('/api/admin/licenses/:id', (req, res) => {
+    if (SINGLE_USER) return res.status(404).json({ error: 'Admin disabled in single-user mode.' });
     const id = String(req.params.id);
     const lic = licenses.find(l => l.id === id);
     if (!lic) return res.status(404).json({ error: 'License not found.' });
@@ -960,6 +1000,7 @@ async function startServer() {
 
   // 18. Admin - Delete License
   app.delete('/api/admin/licenses/:id', (req, res) => {
+    if (SINGLE_USER) return res.status(404).json({ error: 'Admin disabled in single-user mode.' });
     const id = String(req.params.id);
     const index = licenses.findIndex(l => l.id === id);
     if (index === -1) return res.status(404).json({ error: 'License not found.' });
