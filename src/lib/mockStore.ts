@@ -292,6 +292,17 @@ class ClientStore {
     }
     return 'Action processed';
   }
+
+  public deleteAccount(accountId: string): boolean {
+    if (!this.state.accounts[accountId]) return false;
+    delete this.state.accounts[accountId];
+    // remove any pending commands or activity referencing the account
+    // (mock local arrays exist within this file scope)
+    // Remove activity entries
+    this.state.activity = this.state.activity.filter(a => a.accountId !== accountId);
+    this.save();
+    return true;
+  }
 }
 
 export const clientStore = new ClientStore();

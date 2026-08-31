@@ -614,6 +614,29 @@ async function startServer() {
     });
   });
 
+  // 8b. Delete Account (Dashboard)
+  app.delete('/api/accounts/:accountId', authenticateDashboardKey, (req, res) => {
+    const client: Client = (req as any).client;
+    const strAccountId = String(req.params.accountId).trim();
+    const idx = accounts.findIndex(a => a.account_id === strAccountId && a.client_id === client.id);
+    if (idx === -1) return res.status(404).json({ error: 'Account not found or access denied.' });
+
+    // remove account record
+    const removed = accounts.splice(idx, 1)[0];
+    // remove settings, commands and activity for that account
+    delete accountSettingsMap[strAccountId];
+    for (let i = commands.length - 1; i >= 0; i--) {
+      if (commands[i].account_id === strAccountId) commands.splice(i, 1);
+    }
+    for (let i = activities.length - 1; i >= 0; i--) {
+      if (activities[i].account_id === strAccountId) activities.splice(i, 1);
+    }
+
+    logActivity(client.id, strAccountId, 'DELETE', 'Account Removed', `${removed.account_name} removed from workspace`);
+
+    return res.json({ success: true, message: `Account ${strAccountId} deleted.` });
+  });
+
   // 9. Dispatch Remote Commands
   app.post('/api/commands', authenticateDashboardKey, (req, res) => {
     const client: Client = (req as any).client;

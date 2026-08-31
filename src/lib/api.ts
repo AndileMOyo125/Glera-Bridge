@@ -129,6 +129,20 @@ export const api = {
     return local;
   },
 
+  async deleteAccount(accountId: string): Promise<{ success: boolean; message: string } | null> {
+    const data = await request<{ success: boolean; message: string }>(`/api/accounts/${encodeURIComponent(accountId)}`, {
+      method: 'DELETE',
+    });
+    if (data && data.success) return data;
+    // fallback to mock store
+    try {
+      const ok = clientStore.deleteAccount(accountId);
+      return ok ? { success: true, message: `Account ${accountId} deleted (local)` } : null;
+    } catch {
+      return null;
+    }
+  },
+
   async sendCommand(accountId: string, command: 'PAUSE' | 'RESUME' | 'CLOSE_ALL'): Promise<{ success: boolean; commandId: number; message: string }> {
     const data = await request<{ success: boolean; commandId: number; message: string }>('/api/commands', {
       method: 'POST',

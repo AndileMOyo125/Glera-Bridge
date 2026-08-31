@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { StrategyEditor } from './StrategyEditor';
 import { PositionsList } from './PositionsList';
+import { api } from '../lib/api';
 
 interface AccountDetailProps {
   account: AccountDetailType;
@@ -58,6 +59,21 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
     setIsRefreshing(true);
     await onRefresh();
     setTimeout(() => setIsRefreshing(false), 500);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm(`Delete account #${account.accountId}? This cannot be undone.`)) return;
+    try {
+      const res = await api.deleteAccount(account.accountId);
+      if (res && res.success) {
+        alert(res.message || 'Account deleted');
+        onBack();
+        return;
+      }
+      alert('Failed to delete account');
+    } catch (err: any) {
+      alert(err?.message || 'Delete failed');
+    }
   };
 
   // Check 2-phase sync diff: compare saved settings against MT5 reported eaConfig
@@ -100,6 +116,13 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
             title="Refresh Account Data"
           >
             <RefreshCw className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleDeleteAccount}
+            className="p-2 rounded-xl bg-rose-600/10 hover:bg-rose-600/20 text-rose-300 border border-rose-500 transition-colors"
+            title="Delete Account"
+          >
+            Delete
           </button>
           <span className="text-xs font-mono text-zinc-400 font-semibold">#{account.accountId}</span>
         </div>
