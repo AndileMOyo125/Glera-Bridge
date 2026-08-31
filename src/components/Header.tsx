@@ -5,7 +5,7 @@ import gasLogo from '../assets/images/gas_chrome_logo_1787193914844.jpg';
 interface HeaderProps {
   onOpenSecurity: () => void;
   onOpenHelp: () => void;
-  onOpenAdmin: () => void;
+  onOpenAdmin?: () => void;
   isOnline: boolean;
   activeAccountCount: number;
 }
@@ -64,14 +64,16 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden sm:inline">License</span>
           </button>
 
-          <button
-            onClick={onOpenAdmin}
-            className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition-colors flex items-center gap-1.5 text-xs font-bold font-mono shadow-sm"
-            title="Developer Master Key Dispenser & WhatsApp Dispatch"
-          >
-            <Lock className="w-4 h-4 text-amber-400" />
-            <span className="hidden sm:inline">Dev Admin</span>
-          </button>
+          {onOpenAdmin && (
+            <button
+              onClick={onOpenAdmin}
+              className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition-colors flex items-center gap-1.5 text-xs font-bold font-mono shadow-sm"
+              title="Developer Master Key Dispenser & WhatsApp Dispatch"
+            >
+              <Lock className="w-4 h-4 text-amber-400" />
+              <span className="hidden sm:inline">Dev Admin</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

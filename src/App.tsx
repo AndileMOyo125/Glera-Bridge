@@ -173,7 +173,6 @@ export default function App() {
           activeAccountCount={onlineCount}
         />
       </div>
-
       {/* Main Content Area */}
       <main className="relative z-10 max-w-2xl mx-auto px-4 pt-4 pb-28">
         {/* TAB 1: ACCOUNTS / HOME */}
@@ -189,7 +188,6 @@ export default function App() {
                     <span className="uppercase font-mono font-bold tracking-wider text-[10px] text-zinc-400">Net Portfolio Telemetry</span>
                     <span className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-emerald-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Live Bridge Connected
                     </span>
                   </div>
 

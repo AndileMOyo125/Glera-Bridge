@@ -5,7 +5,7 @@ import { ShieldCheck, MessageSquare, Lock, Key, CheckCircle2, AlertTriangle, Ext
 interface ClientLicenseViewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenAdmin: () => void;
+  onOpenAdmin?: () => void;
 }
 
 export const ClientLicenseViewModal: React.FC<ClientLicenseViewModalProps> = ({
@@ -111,19 +111,21 @@ export const ClientLicenseViewModal: React.FC<ClientLicenseViewModalProps> = ({
           </button>
 
           {/* Developer PIN login trigger */}
-          <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500">
-            <span>Are you the developer?</span>
-            <button
-              onClick={() => {
-                onClose();
-                onOpenAdmin();
-              }}
-              className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 hover:underline"
-            >
-              <Lock className="w-3 h-3" />
-              <span>Developer Admin Login</span>
-            </button>
-          </div>
+                  {onOpenAdmin && (
+                    <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500">
+                      <span>Are you the developer?</span>
+                      <button
+                        onClick={() => {
+                          onClose();
+                          onOpenAdmin && onOpenAdmin();
+                        }}
+                        className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 hover:underline"
+                      >
+                        <Lock className="w-3 h-3" />
+                        <span>Developer Admin Login</span>
+                      </button>
+                    </div>
+                  )}
         </div>
       </div>
     </div>
