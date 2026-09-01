@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import crypto from 'crypto';
 import path from 'path';
+import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 
 interface Client {
@@ -91,114 +92,73 @@ interface EALicenseRecord {
   last_used_at: string | null;
   notes: string;
 }
+// Server-side JSON persistence
+const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
 
-// In-memory persistent database store (with initial sample data ready for instant preview)
-const clients: Client[] = [
-  {
-    id: 1,
-    client_name: 'Demo Workspace',
-    api_key: 'gb_live_demo_workspace_key_77a8b9c0d1e2',
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-  }
-];
+const SINGLE_USER = Boolean(process.env.SINGLE_USER && String(process.env.SINGLE_USER) !== '0');
 
-const connections: EAConnection[] = [
-  {
-    id: 1,
-    client_id: 1,
-    connection_name: 'MT5 VPS - IC Markets (Live Scalper)',
-    connection_key: 'gb_ea_demo_connection_key_44f5e6d7c8b9',
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-    last_seen: Date.now() - 2000,
-  }
-];
-
-const licenses: EALicenseRecord[] = [
-  {
-    id: 'lic_8820491_vip',
-    client_name: 'John Trader (VIP Member)',
-    phone_number: '+1 555-0199',
-    mt5_account: '8820491',
-    connection_key: 'gb_ea_demo_connection_key_44f5e6d7c8b9',
-    plan: 'LIFETIME',
-    expires_at: null,
-    status: 'ACTIVE',
-    created_at: new Date(Date.now() - 3600000 * 24 * 7).toISOString(),
-    last_used_at: new Date(Date.now() - 2000).toISOString(),
-    notes: 'Approved VIP license for MT5 account 8820491 on IC Markets',
-  }
-];
-
-const accounts: Account[] = [
-  {
-    account_id: '8820491',
-    client_id: 1,
-    connection_id: 1,
-    account_name: 'Live Scalper Dennis1.0',
-    broker: 'IC Markets Global',
-    currency: 'USD',
-    balance: 10000.00,
-    equity: 10342.50,
-    open_positions: [
-      { ticket: 1094821, symbol: 'EURUSD', type: 'BUY', lots: 0.02, openPrice: 1.08520, profit: 42.50 },
-      { ticket: 1094825, symbol: 'XAUUSD', type: 'BUY', lots: 0.10, openPrice: 2645.10, profit: 300.00 }
-    ],
-    active_markets: ['EURUSD', 'GBPUSD', 'XAUUSD'],
-    reported_global_max_trades: 5,
-    ea_config: {
-      markets: ['EURUSD', 'GBPUSD', 'XAUUSD'],
-      globalMaxTrades: 5,
-      updatedAt: new Date(Date.now() - 5000).toISOString(),
-    },
-    status: 'ACTIVE',
-    last_heartbeat: Date.now() - 2000,
-    updated_at: new Date(Date.now() - 2000).toISOString(),
-  }
-];
-
-const accountSettingsMap: Record<string, EASettings> = {
-  '8820491': {
-    markets: [
-      { symbol: 'EURUSD', lotSize: 0.02, maxTrades: 2, enabled: true },
-      { symbol: 'GBPUSD', lotSize: 0.03, maxTrades: 2, enabled: true },
-      { symbol: 'XAUUSD', lotSize: 0.10, maxTrades: 1, enabled: true },
-    ],
-    globalMaxTrades: 5,
-  }
-};
-
-const commands: Command[] = [];
+let clients: Client[] = [];
+let connections: EAConnection[] = [];
+let licenses: EALicenseRecord[] = [];
+let accounts: Account[] = [];
+let accountSettingsMap: Record<string, EASettings> = {};
+let commands: Command[] = [];
 let nextCommandId = 1;
+let activities: Activity[] = [];
 
-const activities: Activity[] = [
-  {
-    id: 1,
-    client_id: 1,
-    account_id: '8820491',
-    event_type: 'REGISTER',
-    title: 'Workspace Initialized',
-    detail: 'Demo Workspace · MT5 VPS - IC Markets (Live Scalper)',
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: 2,
-    client_id: 1,
-    account_id: '8820491',
-    event_type: 'CONNECT',
-    title: 'MetaTrader 5 Connected',
-    detail: 'Live Scalper Dennis1.0 (#8820491) connected via Dennis1.0 EA',
-    created_at: new Date(Date.now() - 1800000).toISOString(),
-  },
-  {
-    id: 3,
-    client_id: 1,
-    account_id: '8820491',
-    event_type: 'SETTINGS',
-    title: 'Multi-Market Strategy Active',
-    detail: 'EURUSD (0.02 · max 2) | GBPUSD (0.03 · max 2) | XAUUSD (0.10 · max 1) · Global cap: 5',
-    created_at: new Date(Date.now() - 900000).toISOString(),
+function loadDb() {
+  try {
+    if (fs.existsSync(DB_PATH)) {
+      const raw = fs.readFileSync(DB_PATH, 'utf-8');
+      const obj = JSON.parse(raw || '{}');
+      clients = obj.clients || [];
+      connections = obj.connections || [];
+      licenses = obj.licenses || [];
+      accounts = obj.accounts || [];
+      accountSettingsMap = obj.accountSettingsMap || {};
+      commands = obj.commands || [];
+      nextCommandId = obj.nextCommandId || (commands.length ? Math.max(...commands.map((c: any) => c.id)) + 1 : 1);
+      activities = obj.activities || [];
+    }
+  } catch (err) {
+    console.warn('Failed to load DB:', err);
   }
-];
+}
+
+function saveDb() {
+  try {
+    const folder = path.dirname(DB_PATH);
+    if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+    const payload = JSON.stringify({ clients, connections, licenses, accounts, accountSettingsMap, commands, nextCommandId, activities }, null, 2);
+    fs.writeFileSync(DB_PATH, payload, 'utf-8');
+  } catch (err) {
+    console.warn('Failed to save DB:', err);
+  }
+}
+
+// load DB from disk at startup
+loadDb();
+
+// ensure a primary client/connection exists in SINGLE_USER mode
+if (SINGLE_USER && clients.length === 0) {
+  const primaryClient: Client = {
+    id: 1,
+    client_name: 'Primary Workspace',
+    api_key: 'gb_live_' + crypto.randomBytes(12).toString('hex'),
+    created_at: new Date().toISOString(),
+  };
+  clients.push(primaryClient);
+  const primaryConn: EAConnection = {
+    id: 1,
+    client_id: primaryClient.id,
+    connection_name: 'Primary EA Connection',
+    connection_key: 'gb_ea_' + crypto.randomBytes(12).toString('hex'),
+    created_at: new Date().toISOString(),
+    last_seen: null,
+  };
+  connections.push(primaryConn);
+  saveDb();
+}
 
 function logActivity(clientId: number, accountId: string | null, eventType: string, title: string, detail = '') {
   activities.unshift({
@@ -341,6 +301,8 @@ async function startServer() {
     connections.push(newConn);
 
     logActivity(newClientId, null, 'REGISTER', 'Workspace created', `${cleanName} · MT5 Connection 1`);
+    saveDb();
+    saveDb();
 
     return res.status(201).json({
       success: true,
@@ -484,6 +446,7 @@ async function startServer() {
     const pendingCmds = commands.filter(c => c.account_id === strAccountId && c.status === 'PENDING');
     const settings = accountSettingsMap[strAccountId];
 
+    saveDb();
     return res.json({
       success: true,
       accountId: strAccountId,
@@ -517,6 +480,8 @@ async function startServer() {
         acked.push(numId);
       }
     }
+
+    saveDb();
 
     return res.json({ success: true, acknowledged: acked });
   });
@@ -555,6 +520,7 @@ async function startServer() {
     connections.push(newConn);
 
     logActivity(client.id, null, 'CONNECTION_CREATED', 'MT5 Connection Created', name);
+    saveDb();
 
     return res.status(201).json({
       success: true,
@@ -670,6 +636,8 @@ async function startServer() {
 
     logActivity(client.id, strAccountId, 'DELETE', 'Account Removed', `${removed.account_name} removed from workspace`);
 
+    saveDb();
+
     return res.json({ success: true, message: `Account ${strAccountId} deleted.` });
   });
 
@@ -708,6 +676,8 @@ async function startServer() {
       created_at: new Date().toISOString(),
     };
     commands.push(newCmd);
+
+    saveDb();
 
     const activityTitle = upperCommand === 'CLOSE_ALL'
       ? 'Emergency Close Requested'
@@ -756,6 +726,8 @@ async function startServer() {
       markets: finalMarkets,
       globalMaxTrades: parsedGlobal,
     };
+
+    saveDb();
 
     const summary = finalMarkets.map(m => `${m.symbol} (${m.lotSize.toFixed(2)} lots · max ${m.maxTrades})`).join(' | ');
     logActivity(client.id, strAccountId, 'SETTINGS', 'EA Strategy Settings Saved', `${summary} · Global Cap: ${parsedGlobal}`);
@@ -834,6 +806,8 @@ async function startServer() {
         profit: (Math.random() * 80 - 20),
       });
     }
+
+    saveDb();
 
     return res.json({ success: true, message: 'Simulated heartbeat processed', account });
   });
@@ -926,6 +900,8 @@ async function startServer() {
 
     logActivity(1, cleanAccount !== 'Any' ? cleanAccount : null, 'LICENSE_ISSUED', `EA License Issued: ${cleanName}`, `Plan: ${plan} · MT5 Account: ${cleanAccount}`);
 
+    saveDb();
+
     return res.status(201).json({
       success: true,
       message: 'EA License created successfully.',
@@ -979,6 +955,8 @@ async function startServer() {
 
     logActivity(1, lic.mt5_account !== 'Any' ? lic.mt5_account : null, 'LICENSE_UPDATED', `License Updated: ${lic.client_name}`, `Status: ${lic.status}`);
 
+    saveDb();
+
     return res.json({
       success: true,
       message: 'License updated successfully.',
@@ -1007,6 +985,7 @@ async function startServer() {
 
     const deleted = licenses.splice(index, 1)[0];
     logActivity(1, null, 'LICENSE_DELETED', `License Revoked: ${deleted.client_name}`, `Key revoked`);
+    saveDb();
     return res.json({ success: true, message: 'License revoked and deleted.' });
   });
 

@@ -1,0 +1,74 @@
+{
+  "clients": [
+    {
+      "id": 1,
+      "client_name": "Primary Workspace",
+      "api_key": "gb_live_e7448d086fbc2abaef399d97",
+      "created_at": "2026-08-31T23:26:05.547Z"
+    }
+  ],
+  "connections": [
+    {
+      "id": 1,
+      "client_id": 1,
+      "connection_name": "Primary EA Connection",
+      "connection_key": "gb_ea_eed6b2e7fbac9bc224267ea5",
+      "created_at": "2026-08-31T23:26:05.560Z",
+      "last_seen": 1788237253146
+    }
+  ],
+  "licenses": [],
+  "accounts": [
+    {
+      "account_id": "8820491",
+      "client_id": 1,
+      "connection_id": 1,
+      "account_name": "Test Account",
+      "broker": "Test Broker",
+      "currency": "USD",
+      "balance": 10000,
+      "equity": 10000,
+      "open_positions": [],
+      "active_markets": [
+        "EURUSD"
+      ],
+      "reported_global_max_trades": 5,
+      "ea_config": {
+        "markets": [
+          "EURUSD"
+        ],
+        "globalMaxTrades": 5,
+        "updatedAt": "2026-09-01T04:34:13.146Z"
+      },
+      "status": "ACTIVE",
+      "last_heartbeat": 1788237253146,
+      "updated_at": "2026-09-01T04:34:13.146Z"
+    }
+  ],
+  "accountSettingsMap": {
+    "8820491": {
+      "markets": [
+        {
+          "symbol": "EURUSD",
+          "lotSize": 0.02,
+          "maxTrades": 2,
+          "enabled": true
+        }
+      ],
+      "globalMaxTrades": 5
+    }
+  },
+  "commands": [],
+  "nextCommandId": 1,
+  "activities": [
+    {
+      "id": 1,
+      "client_id": 1,
+      "account_id": "8820491",
+      "event_type": "CONNECT",
+      "title": "MetaTrader 5 Connected",
+      "detail": "Test Account · Test Broker",
+      "created_at": "2026-09-01T04:34:13.149Z"
+    }
+  ]
+}

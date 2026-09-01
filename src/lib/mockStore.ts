@@ -14,90 +14,11 @@ interface ClientStoreState {
 }
 
 function getInitialStore(): ClientStoreState {
-  const now = Date.now();
-  const initialPositions: Position[] = [
-    { ticket: 1094821, symbol: 'EURUSD', type: 'BUY', lots: 0.02, openPrice: 1.08520, profit: 42.50 },
-    { ticket: 1094825, symbol: 'XAUUSD', type: 'BUY', lots: 0.10, openPrice: 2645.10, profit: 300.00 },
-  ];
-
-  const defaultMarkets: MarketConfig[] = [
-    { symbol: 'EURUSD', enabled: true, lotSize: 0.02, maxTrades: 2 },
-    { symbol: 'GBPUSD', enabled: true, lotSize: 0.03, maxTrades: 2 },
-    { symbol: 'XAUUSD', enabled: true, lotSize: 0.10, maxTrades: 1 },
-  ];
-
-  const eaConfig: EAAppliedConfig = {
-    markets: ['EURUSD', 'GBPUSD', 'XAUUSD'],
-    globalMaxTrades: 5,
-    updatedAt: new Date(now - 3000).toISOString(),
-  };
-
-  const accountId = '8820491';
-  const summary: AccountSummary = {
-    accountId,
-    accountName: 'IC Markets Live Scalper #1',
-    connectionId: 1,
-    broker: 'IC Markets Ltd',
-    currency: 'USD',
-    balance: 10000.00,
-    equity: 10342.50,
-    positionCount: 2,
-    activeMarkets: ['EURUSD', 'GBPUSD', 'XAUUSD'],
-    reportedActiveMarkets: ['EURUSD', 'GBPUSD', 'XAUUSD'],
-    reportedGlobalMaxTrades: 5,
-    marketCount: 3,
-    status: 'ACTIVE',
-    lastHeartbeat: now - 3000,
-    secondsSinceHeartbeat: 3,
-    isOnline: true,
-    eaConfig,
-  };
-
-  const detail: AccountDetail = {
-    ...summary,
-    openPositions: initialPositions,
-    settings: {
-      markets: defaultMarkets,
-      globalMaxTrades: 5,
-    },
-  };
-
+  // Start empty by default; localStorage will persist user state in the browser.
   return {
-    accounts: {
-      [accountId]: {
-        summary,
-        detail,
-        lastHeartbeat: now - 3000,
-        pendingCommands: [],
-      },
-    },
-    connections: [
-      {
-        id: 1,
-        name: 'MT5 VPS - IC Markets (Live Scalper)',
-        apiKey: 'gb_ea_demo_connection_key_44f5e6d7c8b9',
-        createdAt: new Date().toISOString(),
-        lastSeen: now - 3000,
-      },
-    ],
-    activity: [
-      {
-        id: 1,
-        accountId,
-        eventType: 'EA_SYNC',
-        title: 'Settings Synchronized',
-        detail: 'Settings successfully synchronized with Dennis1.0 MT5 EA',
-        createdAt: new Date(now - 30000).toISOString(),
-      },
-      {
-        id: 2,
-        accountId,
-        eventType: 'SIGNAL',
-        title: 'EA Heartbeat Received',
-        detail: 'Dennis1.0 EA active heartbeat verified (IC Markets)',
-        createdAt: new Date(now - 60000).toISOString(),
-      },
-    ],
+    accounts: {},
+    connections: [],
+    activity: [],
   };
 }
 

@@ -18,3 +18,12 @@ View your app in AI Studio: https://ai.studio/apps/3787bcb2-9023-4b53-9579-daf32
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+Single-user notes
+- To run the server in single-user mode (recommended for one-operator deployments), set `SINGLE_USER=1` in your environment or use the provided `.env.example` as a template.
+
+Example (PowerShell):
+```powershell
+$env:SINGLE_USER = '1'
+npm run dev
+```

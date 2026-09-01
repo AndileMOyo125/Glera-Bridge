@@ -134,13 +134,12 @@ export const api = {
       method: 'DELETE',
     });
     if (data && data.success) return data;
-    // fallback to mock store
+    // best-effort sync of clientStore fallback
     try {
       const ok = clientStore.deleteAccount(accountId);
       return ok ? { success: true, message: `Account ${accountId} deleted (local)` } : null;
-    } catch {
-      return null;
-    }
+    } catch {}
+    return null;
   },
 
   async sendCommand(accountId: string, command: 'PAUSE' | 'RESUME' | 'CLOSE_ALL'): Promise<{ success: boolean; commandId: number; message: string }> {

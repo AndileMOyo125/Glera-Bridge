@@ -168,7 +168,7 @@ export default function App() {
         <Header
           onOpenSecurity={() => setIsClientLicenseModalOpen(true)}
           onOpenHelp={() => setIsHelpModalOpen(true)}
-          onOpenAdmin={() => setIsAdminModalOpen(true)}
+         
           isOnline={isAnyOnline}
           activeAccountCount={onlineCount}
         />

@@ -118,7 +118,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <div>
               <h3 className="text-lg font-bold text-white tracking-tight">Connect MetaTrader 5</h3>
               <p className="text-xs text-zinc-400 mt-0.5">
-                Copy this key once into your MT5 EA parameters. One key handles all pairs on this terminal.
+                Copy this key into your MT5 EA parameters. This single key lets your EA connect to the dashboard for this terminal.
               </p>
             </div>
 
@@ -150,7 +150,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
               <div className="flex items-start gap-2 bg-zinc-900/60 border border-zinc-800 p-2.5 rounded-xl">
                 <span className="font-bold text-amber-400 font-mono">2.</span>
-                <span>Attach the <b>Dennis1.0</b> EA to a chart and paste your Connection Key into <b>InpApiKey</b>.</span>
+                <span>Attach your EA to a chart and paste the Connection Key into the EA parameter named <b>InpApiKey</b>.</span>
               </div>
               <div className="flex items-start gap-2 bg-zinc-900/60 border border-zinc-800 p-2.5 rounded-xl">
                 <span className="font-bold text-amber-400 font-mono">3.</span>
@@ -179,8 +179,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
             <div>
               <h3 className="text-lg font-bold text-white">Listening for MetaTrader 5...</h3>
-              <p className="text-xs text-zinc-400 mt-1 max-w-xs mx-auto leading-relaxed">
-                As soon as Dennis1.0 sends its first signal from your VPS, your account will appear automatically.
+                <p className="text-xs text-zinc-400 mt-1 max-w-xs mx-auto leading-relaxed">
+                As soon as your EA sends its first heartbeat from the terminal, your account will appear automatically in the dashboard.
               </p>
             </div>
 

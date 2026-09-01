@@ -62,17 +62,21 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
   };
 
   const handleDeleteAccount = async () => {
-    if (!confirm(`Delete account #${account.accountId}? This cannot be undone.`)) return;
+    if (!account) return;
+    if (!confirm('Are you sure you want to delete this account? This action cannot be undone.')) return;
     try {
-      const res = await api.deleteAccount(account.accountId);
-      if (res && res.success) {
-        alert(res.message || 'Account deleted');
-        onBack();
-        return;
+      setDeleting(true);
+      const resp = await api.deleteAccount(account.accountId);
+      if (resp && resp.success) {
+        onClose();
+        props.onDeleted && props.onDeleted(account.accountId);
+      } else {
+        alert('Delete failed');
       }
-      alert('Failed to delete account');
-    } catch (err: any) {
-      alert(err?.message || 'Delete failed');
+    } catch (err) {
+      alert('Delete failed');
+    } finally {
+      setDeleting(false);
     }
   };
 
