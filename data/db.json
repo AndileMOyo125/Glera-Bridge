@@ -14,7 +14,7 @@
       "connection_name": "Primary EA Connection",
       "connection_key": "gb_ea_eed6b2e7fbac9bc224267ea5",
       "created_at": "2026-08-31T23:26:05.560Z",
-      "last_seen": 1788237253146
+      "last_seen": 1788679920816
     }
   ],
   "licenses": [],
@@ -23,26 +23,26 @@
       "account_id": "8820491",
       "client_id": 1,
       "connection_id": 1,
-      "account_name": "Test Account",
-      "broker": "Test Broker",
+      "account_name": "Recreated Account",
+      "broker": "Recreated Broker",
       "currency": "USD",
-      "balance": 10000,
-      "equity": 10000,
+      "balance": 5000,
+      "equity": 5000,
       "open_positions": [],
       "active_markets": [
         "EURUSD"
       ],
-      "reported_global_max_trades": 5,
+      "reported_global_max_trades": 3,
       "ea_config": {
         "markets": [
           "EURUSD"
         ],
-        "globalMaxTrades": 5,
-        "updatedAt": "2026-09-01T04:34:13.146Z"
+        "globalMaxTrades": 3,
+        "updatedAt": "2026-09-06T07:32:00.816Z"
       },
       "status": "ACTIVE",
-      "last_heartbeat": 1788237253146,
-      "updated_at": "2026-09-01T04:34:13.146Z"
+      "last_heartbeat": 1788679920816,
+      "updated_at": "2026-09-06T07:32:00.816Z"
     }
   ],
   "accountSettingsMap": {
@@ -55,20 +55,29 @@
           "enabled": true
         }
       ],
-      "globalMaxTrades": 5
+      "globalMaxTrades": 3
     }
   },
   "commands": [],
   "nextCommandId": 1,
   "activities": [
     {
-      "id": 1,
+      "id": 2,
       "client_id": 1,
       "account_id": "8820491",
       "event_type": "CONNECT",
       "title": "MetaTrader 5 Connected",
-      "detail": "Test Account · Test Broker",
-      "created_at": "2026-09-01T04:34:13.149Z"
+      "detail": "Recreated Account · Recreated Broker",
+      "created_at": "2026-09-06T07:32:00.817Z"
+    },
+    {
+      "id": 1,
+      "client_id": 1,
+      "account_id": "8820491",
+      "event_type": "DELETE",
+      "title": "Account Removed",
+      "detail": "Test Account removed from workspace",
+      "created_at": "2026-09-06T07:31:42.119Z"
     }
   ]
 }
