@@ -5,13 +5,10 @@ const STORAGE_API_KEY = 'gb_api_key';
 const STORAGE_EA_KEY = 'gb_ea_connection_key';
 const STORAGE_EA_ID = 'gb_ea_connection_id';
 const STORAGE_EA_NAME = 'gb_ea_connection_name';
-const DEFAULT_DEMO_KEY = 'gb_live_demo_workspace_key_77a8b9c0d1e2';
-
 export function getStoredDashboardKey(): string {
   let key = localStorage.getItem(STORAGE_API_KEY);
   if (!key) {
-    key = DEFAULT_DEMO_KEY;
-    localStorage.setItem(STORAGE_API_KEY, key);
+    key = '';
   }
   return key;
 }
@@ -21,7 +18,7 @@ export function setStoredDashboardKey(key: string): void {
 }
 
 export function getStoredEAKey(): string {
-  return localStorage.getItem(STORAGE_EA_KEY) || 'gb_ea_demo_connection_key_44f5e6d7c8b9';
+  return localStorage.getItem(STORAGE_EA_KEY) || '';
 }
 
 export function setStoredEAConnection(conn: EAConnection): void {
@@ -34,8 +31,8 @@ export function getStoredEAConnectionMeta(): { id: number | null; name: string; 
   const idStr = localStorage.getItem(STORAGE_EA_ID);
   return {
     id: idStr ? Number(idStr) : 1,
-    name: localStorage.getItem(STORAGE_EA_NAME) || 'MT5 VPS - IC Markets (Live Scalper)',
-    key: localStorage.getItem(STORAGE_EA_KEY) || 'gb_ea_demo_connection_key_44f5e6d7c8b9',
+    name: localStorage.getItem(STORAGE_EA_NAME) || 'Primary EA Connection',
+    key: localStorage.getItem(STORAGE_EA_KEY) || '',
   };
 }
 
