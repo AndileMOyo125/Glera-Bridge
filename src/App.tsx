@@ -15,7 +15,6 @@ import { AdminLicenseModal } from './components/AdminLicenseModal';
 import { ClientLicenseViewModal } from './components/ClientLicenseViewModal';
 import { SimulatedTerminalWidget } from './components/SimulatedTerminalWidget';
 import { Plus, ArrowUpRight, ArrowDownRight, Layers, ShieldCheck, Radio, Sparkles, Lock, MessageSquare } from 'lucide-react';
-import gasBgImage from './assets/images/gas_metallic_bg_1787193901213.jpg';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('home');
@@ -153,10 +152,10 @@ export default function App() {
       {/* Ambient Metallic GAS Luxury Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
         <img
-          src={gasBgImage}
-          alt="GAS Obsidian Metallic Background"
+          src="/icon-192.png"
+          alt="Glera Bridge Background"
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center opacity-35 filter brightness-95 contrast-125 scale-105"
+          className="w-full h-full object-cover object-center opacity-12 filter brightness-95 contrast-110"
         />
         {/* Soft Vignette & Carbon Shading to keep high contrast for charts & cards */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#08080A]/90 via-[#08080A]/70 to-[#08080A]/95" />
