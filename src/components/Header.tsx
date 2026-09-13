@@ -1,6 +1,5 @@
 import React from 'react';
 import { ShieldCheck, HelpCircle, Lock, MessageSquare } from 'lucide-react';
-import gasLogo from '../assets/images/gas_chrome_logo_1787193914844.jpg';
 
 interface HeaderProps {
   onOpenSecurity: () => void;
@@ -22,10 +21,10 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-2xl mx-auto flex items-center justify-between">
         {/* Brand identity */}
         <div className="flex items-center gap-3">
-          <div className="relative w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-700/60 overflow-hidden flex items-center justify-center shadow-lg shadow-black/60 group">
+            <div className="relative w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-700/60 overflow-hidden flex items-center justify-center shadow-lg shadow-black/60 group">
             <img
-              src={gasLogo}
-              alt="GAS Trading Logo"
+              src="/icon-192.png"
+              alt="Glera Bridge Logo"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
             />
