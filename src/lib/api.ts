@@ -6,11 +6,12 @@ const STORAGE_EA_KEY = 'gb_ea_connection_key';
 const STORAGE_EA_ID = 'gb_ea_connection_id';
 const STORAGE_EA_NAME = 'gb_ea_connection_name';
 export function getStoredDashboardKey(): string {
-  let key = localStorage.getItem(STORAGE_API_KEY);
-  if (!key) {
-    key = '';
-  }
-  return key;
+  const existing = localStorage.getItem(STORAGE_API_KEY);
+  if (existing) return existing;
+
+  const fallbackKey = 'gb_live_single_user_default';
+  localStorage.setItem(STORAGE_API_KEY, fallbackKey);
+  return fallbackKey;
 }
 
 export function setStoredDashboardKey(key: string): void {

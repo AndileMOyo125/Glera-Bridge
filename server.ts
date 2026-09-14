@@ -95,7 +95,7 @@ interface EALicenseRecord {
 // Server-side JSON persistence
 const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
 
-const SINGLE_USER = Boolean(process.env.SINGLE_USER && String(process.env.SINGLE_USER) !== '0');
+const SINGLE_USER = !['0', 'false', 'off', 'no'].includes(String(process.env.SINGLE_USER ?? '1').trim().toLowerCase());
 
 let clients: Client[] = [];
 let connections: EAConnection[] = [];
