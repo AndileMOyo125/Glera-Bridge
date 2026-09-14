@@ -179,12 +179,12 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-white tracking-tight">Developer Admin Control</h2>
+                <h2 className="text-base font-bold text-white tracking-tight">Workspace Admin Control</h2>
                 <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-mono font-bold">
-                  EA Key Dispenser
+                  Connection Manager
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 font-mono">Issue, manage, and dispatch Dennis1.0 EA keys via WhatsApp</p>
+              <p className="text-xs text-zinc-400 font-mono">Issue, manage, and dispatch MT5 connection keys for your workspace</p>
             </div>
           </div>
           <button

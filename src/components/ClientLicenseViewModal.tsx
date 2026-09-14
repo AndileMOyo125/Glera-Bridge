@@ -31,7 +31,7 @@ export const ClientLicenseViewModal: React.FC<ClientLicenseViewModalProps> = ({
 
   const handleContactDevWhatsApp = () => {
     const acc = licenseInfo?.mt5Account || 'my account';
-    const msg = `Hi Dennis1.0 Developer! 👋 I am running Dennis 1.0 EA on MT5 (Account #${acc}) via Glera Bridge. I need assistance with my license / configuration.`;
+    const msg = `Hi Glera Bridge support! 👋 I am running my MT5 account #${acc} via Glera Bridge and need assistance with my license or connection setup.`;
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -64,8 +64,8 @@ export const ClientLicenseViewModal: React.FC<ClientLicenseViewModalProps> = ({
           <div className="p-3.5 rounded-2xl bg-[#08080A] border border-emerald-500/30 flex items-center gap-3">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             <div>
-              <span className="text-xs font-bold text-emerald-400 block">Authorized Dennis1.0 Terminal</span>
-              <span className="text-[11px] text-zinc-400">Your EA license is active and authorized for automated trade management.</span>
+              <span className="text-xs font-bold text-emerald-400 block">Authorized MT5 Terminal</span>
+              <span className="text-[11px] text-zinc-400">Your Glera Bridge license is active and authorized for automated trade monitoring.</span>
             </div>
           </div>
 

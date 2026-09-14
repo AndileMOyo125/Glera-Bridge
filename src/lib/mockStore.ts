@@ -205,7 +205,7 @@ class ClientStore {
         accountId,
         eventType: 'TRADE_OPEN',
         title: 'New Position Opened',
-        detail: `Dennis1.0 opened ${type} ${lots} ${sym} (#${newPos.ticket})`,
+        detail: `MT5 terminal opened ${type} ${lots} ${sym} (#${newPos.ticket})`,
         createdAt: new Date().toISOString(),
       });
       this.save();

@@ -288,8 +288,8 @@ export const api = {
     return {
       hasLicense: true,
       license: {
-        clientName: 'Active Dennis1.0 License',
-        maskedKey: 'gb_ea_demo••••••••••••44f5',
+        clientName: 'Active Workspace License',
+        maskedKey: 'gb_ea_••••••••••••44f5',
         mt5Account: '8820491',
         plan: 'LIFETIME',
         status: 'ACTIVE',

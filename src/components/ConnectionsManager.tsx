@@ -26,7 +26,7 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
   };
 
   const handleContactDevWhatsApp = () => {
-    const msg = `Hi Dennis1.0 Developer! 👋 I'm setting up my MT5 terminal with Glera Bridge and need an authorized EA Connection Key.`;
+    const msg = `Hi Glera Bridge support! 👋 I'm setting up my MT5 terminal with Glera Bridge and need an authorized connection key.`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
   };
 
@@ -115,7 +115,7 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
 
               <div className="mt-2 text-[11px] text-zinc-400 flex items-center gap-1 font-mono">
                 <Key className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span>Paste into Dennis1.0 EA parameter <b>InpApiKey</b> in MT5</span>
+                <span>Paste into your MT5 bridge parameter <b>InpApiKey</b> in the EA settings</span>
               </div>
             </div>
           );

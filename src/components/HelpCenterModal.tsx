@@ -19,7 +19,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({ isOpen, onClos
           <p>1. Open MT5 on your VPS or desktop.</p>
           <p>2. Navigate to <b>Tools → Options → Expert Advisors</b> tab.</p>
           <p>3. Check the box <b>"Allow WebRequest for listed URL:"</b> and add this server URL (e.g. {window.location.origin}).</p>
-          <p>4. Attach the <b>Dennis1.0</b> EA to any chart and enter your <b>InpApiKey</b> and <b>InpServerUrl</b> in the inputs tab.</p>
+          <p>4. Attach your MT5 expert or bridge client to any chart and enter your <b>InpApiKey</b> and <b>InpServerUrl</b> in the inputs tab.</p>
           <p>5. Click OK and make sure the <b>Algo Trading</b> button is green on the MT5 top toolbar.</p>
         </div>
       )

@@ -244,7 +244,7 @@ export default function App() {
                       </div>
                       <h3 className="font-bold text-base text-white">No Trading Accounts Connected</h3>
                       <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
-                        Attach the Dennis1.0 EA to your MetaTrader 5 terminal with your connection key to start live monitoring.
+                        Connect your MetaTrader 5 terminal to Glera Bridge using your connection key to start live monitoring.
                       </p>
                       <button
                         onClick={() => setIsOnboardingModalOpen(true)}
