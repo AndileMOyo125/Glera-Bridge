@@ -32,9 +32,6 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-base text-zinc-100 tracking-tight font-sans">Glera Bridge</span>
-              <span className="text-[10px] uppercase font-mono font-bold tracking-widest px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                GAS EA
-              </span>
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-mono">
               <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'}`} />

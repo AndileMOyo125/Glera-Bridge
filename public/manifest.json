@@ -1,7 +1,7 @@
 {
-  "name": "GAS MT5 EA Bridge",
-  "short_name": "GAS EA",
-  "description": "GAS EA Remote Telemetry & Risk Controller",
+  "name": "Glera Bridge",
+  "short_name": "Glera Bridge",
+  "description": "Remote MT5 account monitoring and control for a single operator.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#08080A",
