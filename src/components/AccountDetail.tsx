@@ -42,6 +42,7 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'strategy' | 'positions'>('overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const pnl = account.equity - account.balance;
   const isProfit = pnl >= 0;
@@ -65,18 +66,18 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
     if (!account) return;
     if (!confirm('Are you sure you want to delete this account? This action cannot be undone.')) return;
     try {
-      setDeleting(true);
+      setIsDeleting(true);
       const resp = await api.deleteAccount(account.accountId);
       if (resp && resp.success) {
-        onClose();
-        props.onDeleted && props.onDeleted(account.accountId);
+        await onRefresh();
+        onBack();
       } else {
         alert('Delete failed');
       }
     } catch (err) {
       alert('Delete failed');
     } finally {
-      setDeleting(false);
+      setIsDeleting(false);
     }
   };
 
@@ -123,10 +124,11 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
           </button>
           <button
             onClick={handleDeleteAccount}
-            className="p-2 rounded-xl bg-rose-600/10 hover:bg-rose-600/20 text-rose-300 border border-rose-500 transition-colors"
+            disabled={isDeleting}
+            className="p-2 rounded-xl bg-rose-600/10 hover:bg-rose-600/20 text-rose-300 border border-rose-500 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             title="Delete Account"
           >
-            Delete
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </button>
           <span className="text-xs font-mono text-zinc-400 font-semibold">#{account.accountId}</span>
         </div>

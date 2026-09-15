@@ -23,7 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3">
             <div className="relative w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-700/60 overflow-hidden flex items-center justify-center shadow-lg shadow-black/60 group">
             <img
-              src="/icon-192.png"
+              src="/favicon.png"
               alt="Glera Bridge Logo"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform"

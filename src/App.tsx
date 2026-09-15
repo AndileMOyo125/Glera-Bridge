@@ -137,6 +137,7 @@ export default function App() {
       loadData(true);
     } catch (err: any) {
       showToast(err.message || 'Failed to create connection', 'error');
+      throw err;
     }
   };
 

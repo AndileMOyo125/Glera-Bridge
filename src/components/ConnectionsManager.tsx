@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EAConnection } from '../types';
-import { Key, Plus, Copy, Check, ShieldCheck, Server, Lock, MessageSquare, HelpCircle } from 'lucide-react';
+import { Key, Plus, Copy, Check, Server, Lock, MessageSquare } from 'lucide-react';
 
 interface ConnectionsManagerProps {
   connections: EAConnection[];
@@ -16,13 +16,48 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
   onOpenAdmin,
 }) => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [connectionName, setConnectionName] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const handleCopy = async (key: string) => {
     try {
-      await navigator.clipboard.writeText(key);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(key);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = key;
+        textArea.setAttribute('readonly', '');
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
       setCopiedKey(key);
       setTimeout(() => setCopiedKey(null), 2500);
     } catch {}
+  };
+
+  const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const name = connectionName.trim();
+    if (!name) {
+      setCreateError('Enter a name for this MT5 terminal.');
+      return;
+    }
+
+    setCreateError(null);
+    setIsCreating(true);
+    try {
+      await onCreateConnection(name);
+      setConnectionName('');
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : 'Failed to create connection.');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleContactDevWhatsApp = () => {
@@ -54,6 +89,27 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
         <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
           Each MT5/EA terminal installation is tied to an authorized license key issued by the developer. One connection key handles all trading symbols on that terminal.
         </p>
+        <form onSubmit={handleCreate} className="mt-4 flex flex-col sm:flex-row gap-2">
+          <label htmlFor="connection-name" className="sr-only">MT5 terminal name</label>
+          <input
+            id="connection-name"
+            value={connectionName}
+            onChange={(event) => setConnectionName(event.target.value)}
+            placeholder="e.g. Main VPS"
+            maxLength={80}
+            disabled={isCreating}
+            className="min-w-0 flex-1 rounded-xl border border-zinc-700 bg-[#08080A] px-3 py-2 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-amber-400 disabled:opacity-60"
+          />
+          <button
+            type="submit"
+            disabled={isCreating}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3 py-2 text-xs font-bold text-black transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {isCreating ? 'Creating...' : 'Add Terminal'}
+          </button>
+        </form>
+        {createError && <p className="mt-2 text-xs text-rose-400" role="alert">{createError}</p>}
       </div>
 
       {/* Connection Keys List */}
