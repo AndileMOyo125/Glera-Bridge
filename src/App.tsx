@@ -153,7 +153,7 @@ export default function App() {
       {/* Ambient Metallic GAS Luxury Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
         <img
-          src="/icon-192.png"
+          src="/gas-background.jpg"
           alt="Glera Bridge Background"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center opacity-12 filter brightness-95 contrast-110"
