@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EAConnection } from '../types';
-import { Key, Plus, Copy, Check, Server, Lock, MessageSquare, RefreshCw, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import { Key, Plus, Copy, Check, Server, Lock, MessageSquare, RefreshCw, CheckCircle2, AlertCircle, ExternalLink, Activity } from 'lucide-react';
 import { checkBridgeHealth } from '../lib/api';
 
 interface ConnectionsManagerProps {
@@ -81,6 +81,9 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
     }
   };
 
+  const liveConnections = connections.filter((connection) => connection.lastSeen !== null && Date.now() - connection.lastSeen < 60000).length;
+  const waitingConnections = connections.length - liveConnections;
+
   const handleContactDevWhatsApp = () => {
     const msg = `Hi Glera Bridge support! 👋 I'm setting up my MT5 terminal with Glera Bridge and need an authorized connection key.`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
@@ -110,6 +113,20 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
         <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
           Each MT5/EA terminal installation is tied to an authorized license key issued by the developer. One connection key handles all trading symbols on that terminal.
         </p>
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="rounded-xl border border-zinc-800 bg-[#08080A] px-3 py-2">
+            <div className="text-[10px] uppercase font-mono text-zinc-500">Terminals</div>
+            <div className="mt-1 text-lg font-bold text-white">{connections.length}</div>
+          </div>
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
+            <div className="text-[10px] uppercase font-mono text-emerald-400/80">Live</div>
+            <div className="mt-1 text-lg font-bold text-emerald-400">{liveConnections}</div>
+          </div>
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-2">
+            <div className="text-[10px] uppercase font-mono text-amber-400/80">Needs setup</div>
+            <div className="mt-1 text-lg font-bold text-amber-400">{waitingConnections}</div>
+          </div>
+        </div>
         <form onSubmit={handleCreate} className="mt-4 flex flex-col sm:flex-row gap-2">
           <label htmlFor="connection-name" className="sr-only">MT5 terminal name</label>
           <input

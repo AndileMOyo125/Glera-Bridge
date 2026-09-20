@@ -5,17 +5,25 @@ interface HeaderProps {
   onOpenSecurity: () => void;
   onOpenHelp: () => void;
   onOpenAdmin?: () => void;
-  isOnline: boolean;
+  liveStatus: 'LIVE' | 'DEGRADED' | 'OFFLINE';
   activeAccountCount: number;
+  totalAccountCount: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenSecurity,
   onOpenHelp,
   onOpenAdmin,
-  isOnline,
+  liveStatus,
   activeAccountCount,
+  totalAccountCount,
 }) => {
+  const statusCopy = liveStatus === 'LIVE'
+    ? `${activeAccountCount} of ${totalAccountCount} terminal${totalAccountCount === 1 ? '' : 's'} live`
+    : liveStatus === 'DEGRADED'
+    ? `${activeAccountCount} of ${totalAccountCount} terminals live`
+    : 'No live terminal signal';
+
   return (
     <header className="sticky top-0 z-40 bg-[#08080A]/90 backdrop-blur-md border-b border-zinc-800/80 px-4 py-3">
       <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -34,8 +42,8 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-bold text-base text-zinc-100 tracking-tight font-sans">Glera Bridge</span>
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-mono">
-              <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'}`} />
-              <span>{isOnline ? `${activeAccountCount} Terminal${activeAccountCount === 1 ? '' : 's'} Active` : 'No Signal / Offline'}</span>
+              <span className={`w-2 h-2 rounded-full ${liveStatus === 'LIVE' ? 'bg-emerald-400 animate-pulse' : liveStatus === 'DEGRADED' ? 'bg-amber-400' : 'bg-rose-500'}`} />
+              <span>{statusCopy}</span>
             </div>
           </div>
         </div>
@@ -54,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenSecurity}
             className="min-h-11 min-w-11 p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition-colors flex items-center justify-center gap-1.5 text-xs font-medium"
-            title="EA License Status"
+            title="Connection keys and security"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span className="hidden sm:inline">License</span>

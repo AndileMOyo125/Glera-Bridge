@@ -45,6 +45,10 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onSelect }) =
     );
   };
 
+  const signalAge = account.secondsSinceHeartbeat < 60
+    ? `${account.secondsSinceHeartbeat}s ago`
+    : `${Math.floor(account.secondsSinceHeartbeat / 60)}m ago`;
+
   return (
     <div
       onClick={() => onSelect(account.accountId)}
@@ -63,7 +67,12 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onSelect }) =
             {account.broker || 'MetaTrader 5'} · {currency}
           </p>
         </div>
-        <div>{getStatusBadge()}</div>
+        <div className="flex flex-col items-end gap-1">
+          {getStatusBadge()}
+          <span className={`text-[10px] font-mono ${account.isOnline ? 'text-emerald-400/80' : 'text-rose-300/80'}`}>
+            {account.lastHeartbeat ? `Signal ${signalAge}` : 'No signal received'}
+          </span>
+        </div>
       </div>
 
       {/* Numerical Metrics 4-col */}

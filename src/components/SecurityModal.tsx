@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Key, Copy, Check, ShieldCheck, X, Server, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { Key, Copy, Check, ShieldCheck, X, Server, AlertTriangle, Eye, EyeOff, LockKeyhole } from 'lucide-react';
 import { getStoredDashboardKey, getStoredEAKey, getStoredEAConnectionMeta } from '../lib/api';
 
 interface SecurityModalProps {
@@ -19,7 +19,19 @@ export const SecurityModal: React.FC<SecurityModalProps> = ({ isOpen, onClose })
 
   const handleCopy = async (text: string, id: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.setAttribute('readonly', '');
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
       setCopiedWhat(id);
       setTimeout(() => setCopiedWhat(null), 2500);
     } catch {}
@@ -118,6 +130,10 @@ export const SecurityModal: React.FC<SecurityModalProps> = ({ isOpen, onClose })
             <p className="text-xs text-zinc-400">
               This private key unlocks your mobile dashboard session. Keep it confidential.
             </p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5 text-[11px] leading-relaxed text-amber-200">
+              <LockKeyhole className="mr-1.5 inline h-3.5 w-3.5 align-text-bottom" />
+              Never post these keys in screenshots or send them to support. Rotate the workspace key if it is exposed.
+            </div>
             <div className="bg-[#121316] border border-zinc-800 rounded-lg p-2 flex items-center justify-between gap-2">
               <span className="font-mono text-xs text-zinc-300 truncate max-w-[240px]">
                 {revealDashboardKey ? dashboardKey : `${dashboardKey.slice(0, 12)}••••••••••••••••`}

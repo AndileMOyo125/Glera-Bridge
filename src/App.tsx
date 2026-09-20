@@ -12,7 +12,6 @@ import { SecurityModal } from './components/SecurityModal';
 import { HelpCenterModal } from './components/HelpCenterModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { AdminLicenseModal } from './components/AdminLicenseModal';
-import { ClientLicenseViewModal } from './components/ClientLicenseViewModal';
 import { Plus, ArrowUpRight, ArrowDownRight, Layers, ShieldCheck, Radio, Sparkles, Lock, MessageSquare } from 'lucide-react';
 
 export default function App() {
@@ -27,7 +26,6 @@ export default function App() {
 
   // Modals state
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
-  const [isClientLicenseModalOpen, setIsClientLicenseModalOpen] = useState(false);
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
@@ -148,7 +146,15 @@ export default function App() {
   const totalPnl = totalEquity - totalBalance;
   const isOverallProfit = totalPnl >= 0;
   const onlineCount = accounts.filter(a => a.isOnline).length;
-  const isAnyOnline = onlineCount > 0;
+  const totalAccountCount = accounts.length;
+  const liveStatus: 'LIVE' | 'DEGRADED' | 'OFFLINE' = onlineCount === 0
+    ? 'OFFLINE'
+    : onlineCount === totalAccountCount
+    ? 'LIVE'
+    : 'DEGRADED';
+  const totalPositions = accounts.reduce((acc, account) => acc + (account.positionCount || 0), 0);
+  const pnlPercent = totalBalance > 0 ? (totalPnl / totalBalance) * 100 : 0;
+  const latestHeartbeat = accounts.reduce((latest, account) => Math.max(latest, account.lastHeartbeat || 0), 0);
 
   return (
     <div className="relative min-h-screen bg-[#08080A] text-zinc-100 font-sans antialiased selection:bg-amber-500 selection:text-black">
@@ -168,11 +174,12 @@ export default function App() {
       {/* Top Header */}
       <div className="relative z-40">
         <Header
-          onOpenSecurity={() => setIsClientLicenseModalOpen(true)}
+          onOpenSecurity={() => setIsSecurityModalOpen(true)}
           onOpenHelp={() => setIsHelpModalOpen(true)}
          
-          isOnline={isAnyOnline}
+          liveStatus={liveStatus}
           activeAccountCount={onlineCount}
+          totalAccountCount={totalAccountCount}
         />
       </div>
       {/* Main Content Area */}
@@ -200,9 +207,15 @@ export default function App() {
 
                   <div className="flex items-center justify-between text-xs text-zinc-400 mb-2">
                     <span className="uppercase font-mono font-bold tracking-wider text-[10px] text-zinc-400">Net Portfolio Telemetry</span>
-                    <span className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-emerald-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className={`flex items-center gap-1.5 text-[11px] font-mono font-semibold ${liveStatus === 'LIVE' ? 'text-emerald-400' : liveStatus === 'DEGRADED' ? 'text-amber-400' : 'text-rose-400'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${liveStatus === 'LIVE' ? 'bg-emerald-400 animate-pulse' : liveStatus === 'DEGRADED' ? 'bg-amber-400' : 'bg-rose-400'}`} />
+                      {liveStatus === 'LIVE' ? 'LIVE' : liveStatus === 'DEGRADED' ? 'DEGRADED' : 'OFFLINE'}
                     </span>
+                  </div>
+
+                  <div className="mb-4 rounded-xl border border-zinc-800 bg-black/20 px-3 py-2.5 text-[11px] text-zinc-400 flex flex-wrap items-center justify-between gap-2">
+                    <span>{totalAccountCount === 0 ? 'Waiting for your first MT5 heartbeat' : `${onlineCount}/${totalAccountCount} account${totalAccountCount === 1 ? '' : 's'} reporting live`}</span>
+                    <span className="font-mono text-zinc-500">{latestHeartbeat ? `Updated ${new Date(latestHeartbeat).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No heartbeat yet'}</span>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-1">
@@ -225,7 +238,18 @@ export default function App() {
                       <div className={`text-xl font-bold mt-0.5 flex items-center gap-1 font-mono ${isOverallProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
                         {isOverallProfit ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                         {isOverallProfit ? '+' : ''}${totalPnl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          <span className="text-[11px] font-semibold opacity-80">({isOverallProfit ? '+' : ''}{pnlPercent.toFixed(2)}%)</span>
                       </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-xl border border-zinc-800 bg-black/20 px-3 py-2">
+                      <div className="text-[10px] uppercase font-mono text-zinc-500">Open positions</div>
+                      <div className="mt-1 font-mono font-bold text-zinc-200">{totalPositions}</div>
+                    </div>
+                    <div className="rounded-xl border border-zinc-800 bg-black/20 px-3 py-2">
+                      <div className="text-[10px] uppercase font-mono text-zinc-500">Account health</div>
+                      <div className={`mt-1 font-mono font-bold ${liveStatus === 'LIVE' ? 'text-emerald-400' : liveStatus === 'DEGRADED' ? 'text-amber-400' : 'text-rose-400'}`}>{liveStatus}</div>
                     </div>
                   </div>
                 </div>
@@ -366,10 +390,9 @@ export default function App() {
       />
 
       {/* Client-Facing Protected License Modal */}
-      <ClientLicenseViewModal
-        isOpen={isClientLicenseModalOpen}
-        onClose={() => setIsClientLicenseModalOpen(false)}
-        onOpenAdmin={() => setIsAdminModalOpen(true)}
+      <SecurityModal
+        isOpen={isSecurityModalOpen}
+        onClose={() => setIsSecurityModalOpen(false)}
       />
 
       {/* Setup Guide & Help Center Modal */}
