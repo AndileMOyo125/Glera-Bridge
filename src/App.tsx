@@ -13,7 +13,6 @@ import { HelpCenterModal } from './components/HelpCenterModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { AdminLicenseModal } from './components/AdminLicenseModal';
 import { ClientLicenseViewModal } from './components/ClientLicenseViewModal';
-import { SimulatedTerminalWidget } from './components/SimulatedTerminalWidget';
 import { Plus, ArrowUpRight, ArrowDownRight, Layers, ShieldCheck, Radio, Sparkles, Lock, MessageSquare } from 'lucide-react';
 
 export default function App() {
@@ -24,6 +23,7 @@ export default function App() {
   const [connections, setConnections] = useState<EAConnection[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Modals state
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -53,6 +53,7 @@ export default function App() {
       setAccounts(accs);
       setConnections(conns);
       setActivities(acts);
+      setLoadError(null);
 
       // If viewing an account detail, refresh it too
       if (selectedAccountId) {
@@ -65,6 +66,7 @@ export default function App() {
       }
     } catch (err: any) {
       console.error('[Glera Bridge] Polling error:', err);
+      setLoadError(err?.message || 'Unable to reach Glera Bridge. Check your connection and try again.');
     } finally {
       if (!silent) setIsLoading(false);
     }
@@ -175,6 +177,18 @@ export default function App() {
       </div>
       {/* Main Content Area */}
       <main className="relative z-10 max-w-2xl mx-auto px-4 pt-4 pb-28">
+        {loadError && (
+          <div className="mb-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4 text-rose-200" role="alert">
+            <div className="flex items-start gap-3">
+              <Radio className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-sm text-rose-300">Dashboard data is unavailable</h3>
+                <p className="mt-1 text-xs leading-relaxed">{loadError}</p>
+                <button onClick={() => loadData()} className="mt-3 min-h-11 rounded-xl bg-rose-500/20 px-4 py-2 text-xs font-bold text-rose-100 border border-rose-500/30 hover:bg-rose-500/30">Try again</button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* TAB 1: ACCOUNTS / HOME */}
         {currentTab === 'home' && (
           <div className="space-y-4 animate-in fade-in duration-200">
@@ -267,13 +281,6 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Preview Interactive Terminal Simulator Widget */}
-                <div className="pt-2">
-                  <SimulatedTerminalWidget
-                    currentAccountId={accounts[0]?.accountId || '8820491'}
-                    onEventTriggered={() => loadData(true)}
-                  />
-                </div>
               </>
             ) : (
               selectedAccountDetail && (

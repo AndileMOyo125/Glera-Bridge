@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { EAConnection } from '../types';
-import { Key, Plus, Copy, Check, Server, Lock, MessageSquare } from 'lucide-react';
+import { Key, Plus, Copy, Check, Server, Lock, MessageSquare, RefreshCw, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import { checkBridgeHealth } from '../lib/api';
 
 interface ConnectionsManagerProps {
   connections: EAConnection[];
@@ -19,6 +20,8 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
   const [connectionName, setConnectionName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [testingId, setTestingId] = useState<number | null>(null);
+  const [testResult, setTestResult] = useState<{ id: number; message: string; ok: boolean } | null>(null);
 
   const handleCopy = async (key: string) => {
     try {
@@ -38,6 +41,24 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
       setCopiedKey(key);
       setTimeout(() => setCopiedKey(null), 2500);
     } catch {}
+  };
+
+  const handleTestConnection = async (connection: EAConnection) => {
+    setTestingId(connection.id);
+    setTestResult(null);
+    try {
+      await checkBridgeHealth();
+      const isOnline = connection.lastSeen !== null && Date.now() - connection.lastSeen < 60000;
+      setTestResult({
+        id: connection.id,
+        ok: isOnline,
+        message: isOnline ? 'Bridge is reachable and this terminal sent a recent heartbeat.' : 'Bridge is reachable, but this terminal has not sent a recent heartbeat.',
+      });
+    } catch (error) {
+      setTestResult({ id: connection.id, ok: false, message: error instanceof Error ? error.message : 'Connection test failed.' });
+    } finally {
+      setTestingId(null);
+    }
   };
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -66,7 +87,7 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-20 animate-in fade-in duration-200 font-sans">
+    <div className="space-y-4 pb-24 animate-in fade-in duration-200 font-sans">
       {/* Header Card */}
       <div className="bg-[#121316] border border-zinc-800 rounded-2xl p-4">
         <div className="flex items-center justify-between">
@@ -74,12 +95,12 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
             <div className="text-[10px] uppercase font-mono font-bold text-amber-400 tracking-wider">
               License & Authentication
             </div>
-            <h2 className="text-base font-bold text-white tracking-tight mt-0.5">MetaTrader 5 EA Licenses</h2>
+            <h2 className="text-base font-bold text-white tracking-tight mt-0.5">MT5 Connections</h2>
           </div>
           {onOpenAdmin && (
             <button
               onClick={onOpenAdmin}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shadow-md shadow-amber-500/20 transition-all font-mono active:scale-95"
+              className="min-h-11 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shadow-md shadow-amber-500/20 transition-all font-mono active:scale-95"
             >
               <Lock className="w-3.5 h-3.5" />
               <span>Issue New Key (Admin)</span>
@@ -114,6 +135,13 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
 
       {/* Connection Keys List */}
       <div className="space-y-3">
+        {connections.length === 0 && (
+          <div className="bg-[#121316] border border-zinc-800 rounded-2xl p-6 text-center">
+            <Server className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
+            <h3 className="font-bold text-sm text-white">No MT5 terminals connected</h3>
+            <p className="mt-1 text-xs leading-relaxed text-zinc-400">Create a named terminal above, then copy its key into your EA settings.</p>
+          </div>
+        )}
         {connections.map((conn) => {
           const isCopied = copiedKey === conn.apiKey;
           const isRecentlyActive = conn.lastSeen && (Date.now() - conn.lastSeen < 60000);
@@ -151,14 +179,14 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
               </div>
 
               {/* Key Display */}
-              <div className="mt-3 bg-[#08080A] border border-zinc-800/90 rounded-xl p-2.5 flex items-center justify-between gap-2">
-                <div className="font-mono text-xs text-amber-400 truncate max-w-[240px] sm:max-w-md">
+              <div className="mt-3 bg-[#08080A] border border-zinc-800/90 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="font-mono text-xs text-amber-400 overflow-x-auto whitespace-nowrap select-all pb-1 sm:pb-0">
                   {conn.apiKey}
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCopy(conn.apiKey)}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 shrink-0 font-mono ${
+                  className={`min-h-11 w-full sm:w-auto px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 shrink-0 font-mono ${
                     isCopied
                       ? 'bg-emerald-500 text-black'
                       : 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700 hover:text-white border border-zinc-700'
@@ -173,6 +201,26 @@ export const ConnectionsManager: React.FC<ConnectionsManagerProps> = ({
                 <Key className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span>Paste into your MT5 bridge parameter <b>InpApiKey</b> in the EA settings</span>
               </div>
+              <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleTestConnection(conn)}
+                  disabled={testingId === conn.id}
+                  className="min-h-11 flex-1 rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-bold text-zinc-200 hover:bg-zinc-800 disabled:opacity-60 flex items-center justify-center gap-1.5"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${testingId === conn.id ? 'animate-spin' : ''}`} />
+                  {testingId === conn.id ? 'Testing...' : 'Test connection'}
+                </button>
+                <a href={`${window.location.origin}/api/health`} target="_blank" rel="noreferrer" className="min-h-11 flex-1 rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-bold text-zinc-200 hover:bg-zinc-800 flex items-center justify-center gap-1.5">
+                  <ExternalLink className="w-3.5 h-3.5" /> Server status
+                </a>
+              </div>
+              {testResult?.id === conn.id && (
+                <div className={`mt-2 rounded-xl border p-3 text-xs leading-relaxed ${testResult.ok ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200' : 'border-amber-500/30 bg-amber-500/10 text-amber-200'}`} role="status">
+                  {testResult.ok ? <CheckCircle2 className="inline w-4 h-4 mr-1.5 align-text-bottom" /> : <AlertCircle className="inline w-4 h-4 mr-1.5 align-text-bottom" />}
+                  {testResult.message}
+                </div>
+              )}
             </div>
           );
         })}

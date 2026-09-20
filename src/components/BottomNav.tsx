@@ -19,7 +19,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       <div className="max-w-md mx-auto grid grid-cols-3 px-3 py-2 gap-1">
         <button
           onClick={() => onChangeTab('home')}
-          className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all ${
+          className={`min-h-11 flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all ${
             currentTab === 'home'
               ? 'text-amber-400 bg-amber-500/10 font-bold border border-amber-500/20 shadow-sm'
               : 'text-zinc-400 hover:text-zinc-200'
@@ -31,7 +31,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
         <button
           onClick={() => onChangeTab('activity')}
-          className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all relative ${
+          className={`min-h-11 flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all relative ${
             currentTab === 'activity'
               ? 'text-amber-400 bg-amber-500/10 font-bold border border-amber-500/20 shadow-sm'
               : 'text-zinc-400 hover:text-zinc-200'
@@ -46,7 +46,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
         <button
           onClick={() => onChangeTab('settings')}
-          className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all ${
+          className={`min-h-11 flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all ${
             currentTab === 'settings'
               ? 'text-amber-400 bg-amber-500/10 font-bold border border-amber-500/20 shadow-sm'
               : 'text-zinc-400 hover:text-zinc-200'

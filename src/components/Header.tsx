@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenHelp}
-            className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition-colors flex items-center gap-1.5 text-xs font-medium"
+            className="min-h-11 min-w-11 p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition-colors flex items-center justify-center gap-1.5 text-xs font-medium"
             title="Setup Guide & Help"
           >
             <HelpCircle className="w-4 h-4 text-amber-400" />
@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenSecurity}
-            className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition-colors flex items-center gap-1.5 text-xs font-medium"
+            className="min-h-11 min-w-11 p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition-colors flex items-center justify-center gap-1.5 text-xs font-medium"
             title="EA License Status"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -63,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onOpenAdmin && (
             <button
               onClick={onOpenAdmin}
-              className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition-colors flex items-center gap-1.5 text-xs font-bold font-mono shadow-sm"
+              className="min-h-11 min-w-11 p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition-colors flex items-center justify-center gap-1.5 text-xs font-bold font-mono shadow-sm"
               title="Developer Master Key Dispenser & WhatsApp Dispatch"
             >
               <Lock className="w-4 h-4 text-amber-400" />

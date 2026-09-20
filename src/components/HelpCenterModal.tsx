@@ -69,8 +69,8 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({ isOpen, onClos
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-[#121316] border border-zinc-800 rounded-2xl max-w-md w-full p-5 shadow-2xl animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-start sm:items-center justify-center overflow-y-auto p-4">
+      <div className="bg-[#121316] border border-zinc-800 rounded-2xl max-w-md w-full p-5 my-auto shadow-2xl animate-in zoom-in-95 duration-150 max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
@@ -116,7 +116,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({ isOpen, onClos
         <div className="mt-5 pt-3 border-t border-zinc-800 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold transition-colors"
+            className="min-h-11 px-5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold transition-colors"
           >
             Close Guide
           </button>

@@ -43,6 +43,7 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
   const [activeTab, setActiveTab] = useState<'overview' | 'strategy' | 'positions'>('overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const pnl = account.equity - account.balance;
   const isProfit = pnl >= 0;
@@ -58,8 +59,14 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
-    await onRefresh();
-    setTimeout(() => setIsRefreshing(false), 500);
+    setActionError(null);
+    try {
+      await onRefresh();
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Unable to refresh this account.');
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -67,15 +74,16 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
     if (!confirm('Are you sure you want to delete this account? This action cannot be undone.')) return;
     try {
       setIsDeleting(true);
+      setActionError(null);
       const resp = await api.deleteAccount(account.accountId);
       if (resp && resp.success) {
         await onRefresh();
         onBack();
       } else {
-        alert('Delete failed');
+        setActionError('The account could not be deleted. Refresh and try again.');
       }
-    } catch (err) {
-      alert('Delete failed');
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'The account could not be deleted. Check the server and try again.');
     } finally {
       setIsDeleting(false);
     }
@@ -133,6 +141,12 @@ export const AccountDetail: React.FC<AccountDetailProps> = ({
           <span className="text-xs font-mono text-zinc-400 font-semibold">#{account.accountId}</span>
         </div>
       </div>
+
+      {actionError && (
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs leading-relaxed text-rose-200" role="alert">
+          <b className="text-rose-300">Action failed:</b> {actionError}
+        </div>
+      )}
 
       {/* Offline Warning Banner */}
       {!account.isOnline && (

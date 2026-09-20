@@ -58,12 +58,20 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     }
     return data;
   } catch (err: any) {
-    if (err.message && !err.message.includes('Failed to fetch') && !err.message.includes('JSON')) {
+    if (err instanceof Error && err.message && !err.message.includes('Failed to fetch')) {
       throw err;
     }
-    // Fallback to clientStore for local preview resilience
-    return null;
+    throw new Error('Unable to reach Glera Bridge. Check your connection and try again.');
   }
+}
+
+export async function checkBridgeHealth(): Promise<{ status: string; timestamp?: string }> {
+  const res = await fetch('/api/health', { headers: { Accept: 'application/json' } });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !data) {
+    throw new Error('The bridge server is not responding.');
+  }
+  return data;
 }
 
 export const api = {

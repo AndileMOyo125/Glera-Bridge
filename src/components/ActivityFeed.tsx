@@ -85,8 +85,9 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ activities, onRefres
       {filteredActivities.length === 0 ? (
         <div className="bg-[#111722] border border-white/10 rounded-2xl p-8 text-center">
           <History className="w-8 h-8 text-slate-500 mx-auto mb-2" />
-          <h4 className="font-bold text-sm text-white">No Activity Records</h4>
-          <p className="text-xs text-slate-400 mt-1">Actions and connection events will be logged here.</p>
+          <h4 className="font-bold text-sm text-white">{activities.length === 0 ? 'No activity yet' : 'No matching activity'}</h4>
+          <p className="text-xs text-slate-400 mt-1">{activities.length === 0 ? 'Actions and connection events will appear here after you connect MT5.' : 'Try another event filter or refresh the feed.'}</p>
+          <button onClick={onRefresh} className="min-h-11 mt-3 rounded-xl bg-white/10 px-4 py-2 text-xs font-bold text-white border border-white/10 hover:bg-white/15">Refresh feed</button>
         </div>
       ) : (
         <div className="space-y-2">

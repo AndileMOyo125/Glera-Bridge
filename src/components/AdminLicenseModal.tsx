@@ -26,6 +26,7 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // New License Form State
   const [isCreating, setIsCreating] = useState(false);
@@ -80,6 +81,7 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
     if (!newClientName.trim()) return;
 
     setIsSubmitting(true);
+    setActionError(null);
     try {
       const created = await api.createAdminLicense({
         clientName: newClientName.trim(),
@@ -107,7 +109,7 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
         setIsWhatsAppOpen(true);
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to issue license');
+      setActionError(err.message || 'Failed to issue license. Check the server and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -116,21 +118,23 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
   const handleToggleStatus = async (lic: EALicense) => {
     const nextStatus: LicenseStatus = lic.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
     try {
+      setActionError(null);
       await api.updateAdminLicense(lic.id, { status: nextStatus });
       await loadLicenses();
       onLicenseChanged?.();
     } catch (err: any) {
-      alert(err.message || 'Status update failed');
+      setActionError(err.message || 'Status update failed. Refresh and try again.');
     }
   };
 
   const handleExtend = async (lic: EALicense, days: number) => {
     try {
+      setActionError(null);
       await api.updateAdminLicense(lic.id, { extendDays: days });
       await loadLicenses();
       onLicenseChanged?.();
     } catch (err: any) {
-      alert(err.message || 'Renewal failed');
+      setActionError(err.message || 'Renewal failed. Refresh and try again.');
     }
   };
 
@@ -139,11 +143,12 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
       return;
     }
     try {
+      setActionError(null);
       await api.deleteAdminLicense(lic.id);
       await loadLicenses();
       onLicenseChanged?.();
     } catch (err: any) {
-      alert(err.message || 'Deletion failed');
+      setActionError(err.message || 'Deletion failed. Refresh and try again.');
     }
   };
 
@@ -169,8 +174,8 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
   const suspendedCount = licenses.filter(l => l.status === 'SUSPENDED').length;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-[#121316] border border-zinc-800 rounded-3xl max-w-2xl w-full shadow-2xl animate-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-start sm:items-center justify-center overflow-y-auto p-3 sm:p-4">
+      <div className="bg-[#121316] border border-zinc-800 rounded-3xl max-w-2xl w-full my-auto shadow-2xl animate-in zoom-in-95 duration-150 max-h-[calc(100dvh-1.5rem)] flex flex-col overflow-hidden">
         {/* Modal Topbar */}
         <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between bg-[#0e0f12]">
           <div className="flex items-center gap-3">
@@ -194,6 +199,8 @@ export const AdminLicenseModal: React.FC<AdminLicenseModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {actionError && <div className="mx-5 mt-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs leading-relaxed text-rose-200" role="alert"><b className="text-rose-300">Action failed:</b> {actionError}</div>}
 
         {/* Modal Body */}
         <div className="p-5 overflow-y-auto flex-1 space-y-5">
