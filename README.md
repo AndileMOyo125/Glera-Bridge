@@ -28,6 +28,10 @@ The system has three parts:
 
 An account is considered live while its most recent heartbeat is within the server's 30-second heartbeat window. The dashboard exposes clear `LIVE`, `DEGRADED`, `OFFLINE`, and account-level status states so operators can distinguish a healthy terminal from a stale connection.
 
+### Why this project matters
+
+Glera Bridge is designed to demonstrate practical engineering in a real-world operational system: secure key handling, event-driven telemetry, stateful backend validation, live monitoring, and remote control workflows. It is a good portfolio project because it shows the ability to move from interface design into infrastructure thinking, trust boundaries, and system reliability.
+
 ### Why WhatsApp-based key delivery is intentional
 
 This is a personal, owner-controlled trading operations system, not a shared SaaS product. The WhatsApp API is used as a secure delivery channel for the operator's credentials and operational messages, not as the primary trust boundary of the platform. In practical terms, the bridge authenticates access using the workspace-scoped connection key, server-side validation, and the operator's own dashboard credentials—not by trusting the phone number or device identity of the WhatsApp account itself.
