@@ -28,6 +28,12 @@ The system has three parts:
 
 An account is considered live while its most recent heartbeat is within the server's 30-second heartbeat window. The dashboard exposes clear `LIVE`, `DEGRADED`, `OFFLINE`, and account-level status states so operators can distinguish a healthy terminal from a stale connection.
 
+### Why WhatsApp-based key delivery is intentional
+
+This is a personal operations application, not a multi-tenant SaaS platform. The WhatsApp API is used as a delivery mechanism for the operator's own bot identity, not as the trust boundary for the system itself. In other words, the bridge does not rely on the phone number or device identity of the WhatsApp account to authorize access; it relies on the workspace-scoped connection key, server-side validation, and the operator's controlled credentials. That means the bot can be registered under a separate WhatsApp account or companion account while still reporting back into the same private dashboard and monitoring environment used by the operator on their own devices.
+
+This architecture is technically sound for a self-hosted trading stack: the actual authorization is bound to the app's connection registry and session state, while WhatsApp acts as a convenient message transport for distribution of credentials and operational notifications. The result is a portable, owner-controlled system where telemetry, command routing, and account visibility remain centralized to the operator's workspace even when the bot is registered under a different account context.
+
 ## Features
 
 ### Account monitoring
