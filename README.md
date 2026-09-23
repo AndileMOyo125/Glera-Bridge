@@ -1,3 +1,7 @@
+
+
+
+
 # Glera Bridge
 
 Glera Bridge is a full-stack monitoring and management platform that connects a MetaTrader 5 (MT5) Expert Advisor to a responsive web dashboard. It gives operators a centralized view of account telemetry, open positions, terminal connections, activity history and selected remote EA controls.
@@ -9,8 +13,8 @@ Glera Bridge is a full-stack monitoring and management platform that connects a 
 
 ## 🎥 Project Demo
 
-[![Glera Bridge Demo](./docs/demo-thumbnail.png)](VIDEO_URL_HERE)
-
+[![Glera Bridge Demo](<img width="1920" height="1080" alt="glera-bridge-desktop-thumbnail" src="https://github.com/user-attachments/assets/5374b975-f88d-46b7-a96f-d9d0f3bd532a" />
+)]
 Watch the demo to see the dashboard, MT5 connections, account monitoring, security features and operational workflows.
 
 > Add the demo thumbnail and replace `VIDEO_URL_HERE` when the video is ready.
