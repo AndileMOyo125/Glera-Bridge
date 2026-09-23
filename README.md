@@ -4,7 +4,7 @@ Glera Bridge is a full-stack monitoring and management platform that connects a 
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)](https://expressjs.com/) [![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 
-**Live Demo:** Add deployment URL here  
+**Live Demo:** https://glera-bridge.vercel.app/
 **Repository:** [AndileMOyo125/Glera-Bridge](https://github.com/AndileMOyo125/Glera-Bridge)
 
 ## 🎥 Project Demo
@@ -26,7 +26,7 @@ Watch the demo to see the dashboard, MT5 connections, account monitoring, securi
 - **Dashboard** — Use a responsive interface for connected accounts, activity, settings and operational controls.
 - **Backend/API** — Express endpoints handle registration, heartbeats, account data, connections, settings, activity and queued EA commands.
 
-## 🖼️ Screenshots
+##  Screenshots
 
 _Add the screenshots below to `docs/screenshots/` when they are ready._
 
@@ -35,19 +35,24 @@ _Add the screenshots below to `docs/screenshots/` when they are ready._
 
 
 ### Open Positions
-![Open Positions](./docs/screenshots/positions.png)
+<img width="3200" height="2000" alt="glera-bridge-desktop-account-detail-positions" src="https://github.com/user-attachments/assets/636b76ef-491c-4765-9084-d77837d1c432" />
+
 
 ### Activity & Audit Log
-![Activity Audit Log](./docs/screenshots/activity-audit-log.png)
+<img width="3200" height="2000" alt="glera-bridge-desktop-activity-audit-log" src="https://github.com/user-attachments/assets/7eebd547-42fa-41b7-af95-587eb8085131" />
+
 
 ### MT5 Connections
-![MT5 Connections](./docs/screenshots/mt5-connections.png)
+<img width="3200" height="2000" alt="glera-bridge-desktop-mt5-connections" src="https://github.com/user-attachments/assets/a722a5d9-5c43-4ea7-bc65-d8fbe77f1b07" />
+
 
 ### Security Connection Keys
-![Security Connection Keys](./docs/screenshots/security-connection-keys.png)
+<img width="3200" height="2000" alt="glera-bridge-desktop-security-connection-keys" src="https://github.com/user-attachments/assets/7e0e4f96-0d32-4e46-a215-8c1c42305de0" />
+
 
 ### WhatsApp Key Delivery
-![WhatsApp Key Delivery](./docs/screenshots/whatsapp-key-delivery.png)
+<img width="2160" height="2160" alt="glera-bridge-whatsapp-key-delivery" src="https://github.com/user-attachments/assets/1107d4b9-81d6-49da-b810-0c6f22498e83" />
+
 
 ## 🛠️ Tech Stack
 
