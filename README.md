@@ -31,7 +31,8 @@ Watch the demo to see the dashboard, MT5 connections, account monitoring, securi
 _Add the screenshots below to `docs/screenshots/` when they are ready._
 
 ### Account Details
-![Account Details](./docs/screenshots/account-details.png)
+<img width="3200" height="2000" alt="glera-bridge-desktop-account-detail-positions" src="https://github.com/user-attachments/assets/9a0b0f00-774c-4e0d-85e1-6a27e2d2d9c9" />
+
 
 ### Open Positions
 ![Open Positions](./docs/screenshots/positions.png)
